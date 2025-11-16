@@ -56,7 +56,12 @@ type ReferenceObject = ReferenceObject30 | ReferenceObject31;
 type RequestBodyObject = RequestBodyObject30 | RequestBodyObject31;
 type ResponseObject = ResponseObject30 | ResponseObject31;
 type SchemaObject = SchemaObject30 | SchemaObject31;
-type SecuritySchemeObject = SecuritySchemeObject30 | SecuritySchemeObject31;
+type SecuritySchemeObject = (
+  | SecuritySchemeObject30
+  | SecuritySchemeObject31
+) & {
+  example?: any;
+};
 
 import type { ZodObject, ZodPipe, ZodType } from 'zod';
 import { Metadata } from './metadata';
@@ -135,9 +140,15 @@ export type OpenAPIComponentObject =
   | ISpecificationExtension;
 
 export type ComponentTypeKey = Exclude<keyof ComponentsObject, number>;
-export type ComponentTypeOf<K extends ComponentTypeKey> = NonNullable<
-  ComponentsObject[K]
->[string];
+
+// Helper type to add example field to SecuritySchemeObject
+type EnhancedComponentType<K extends ComponentTypeKey> =
+  K extends 'securitySchemes'
+    ? NonNullable<ComponentsObject[K]>[string] & { example?: any }
+    : NonNullable<ComponentsObject[K]>[string];
+
+export type ComponentTypeOf<K extends ComponentTypeKey> =
+  EnhancedComponentType<K>;
 
 export type WebhookDefinition = { type: 'webhook'; webhook: RouteConfig };
 

@@ -53,6 +53,51 @@ describe('Custom components', () => {
     });
   });
 
+  it('can register and generate security schemes with example', () => {
+    const registry = new OpenAPIRegistry();
+
+    const bearerAuth = registry.registerComponent(
+      'securitySchemes',
+      'Private API Key',
+      {
+        type: 'http',
+        scheme: 'bearer',
+        example: 'Bearer <token>',
+      }
+    );
+
+    registry.registerPath({
+      path: '/protected',
+      method: 'get',
+      security: [{ [bearerAuth.name]: [] }],
+      responses: {
+        200: {
+          description: 'Protected resource',
+          content: {
+            'application/json': {
+              schema: z.string(),
+            },
+          },
+        },
+      },
+    });
+
+    const builder = new OpenApiGeneratorV3(registry.definitions);
+    const document = builder.generateDocument(testDocConfig);
+
+    expect(document.paths['/protected']?.get?.security).toEqual([
+      { 'Private API Key': [] },
+    ]);
+
+    expect(document.components!.securitySchemes).toEqual({
+      'Private API Key': {
+        type: 'http',
+        scheme: 'bearer',
+        example: 'Bearer <token>',
+      },
+    });
+  });
+
   it('can register and generate headers', () => {
     const registry = new OpenAPIRegistry();
 

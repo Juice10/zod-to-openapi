@@ -11,6 +11,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   schemas:
     UserId:
       type: string
