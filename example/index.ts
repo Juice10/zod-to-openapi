@@ -41,6 +41,7 @@ const bearerAuth = registry.registerComponent('securitySchemes', 'bearerAuth', {
   type: 'http',
   scheme: 'bearer',
   bearerFormat: 'JWT',
+  example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
 });
 
 registry.registerPath({
